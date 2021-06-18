@@ -17,7 +17,7 @@ async def on_message(message):
             await message.channel.send("JAK TI CHUTNALA KYTKA K VEČEŘI ?")
         elif random.randint(0,100) < 7:
             await message.channel.send("MÁM VELKÝ BRÝLE!")
-        elif random.randint(0100) < 10:
+        elif random.randint(0,100) < 10:
             await message.channel.send("Čau <@!452547916184158218> !")
         else:
             text = random_page()
