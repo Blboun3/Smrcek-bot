@@ -10,9 +10,18 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-    if random.randint(0,100) < 50:
-        text = random_page()
-        await message.channel.send(text)
+    if random.randint(0,100) < 10:
+        if random.randint(0,100) < 2:
+            await message.channel.send("KUP SI VĚTŠÍ BRÝLE!")
+        elif random.randint(0,100) < 5:
+            await message.channel.send("JAK TI CHUTNALA KYTKA K VEČEŘI ?")
+        elif random.randint(0,100) < 7:
+            await message.channel.send("MÁM VELKÝ BRÝLE!")
+        elif random.randint(0100) < 10:
+            await message.channel.send("Čau <@!452547916184158218> !")
+        else:
+            text = random_page()
+            await message.channel.send(text)
 
     if message.content.startswith('🌲hello'):
         await message.channel.send('Zdravím, jsem Smrček a ty by jsi si měl koupit větší brýle!')
@@ -33,7 +42,7 @@ async def on_ready():
 	# Vypsání výsledků
     print("---------------------------------------")
     print('Everything is loaded up, bot is ready for use! \n\tPrefix is: "$" \n\tBot\' user tag is: \'{0.user}\''.format(client))
-    print("\tSmrček bot is in  " + str(guild_count) + " guilds\n")
+    print("\tSmrček bot is in  " + str(guild_count) + " guilds\n\n\n")
 
 import wikipedia
 wikipedia.set_lang('cs')
