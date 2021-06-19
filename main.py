@@ -19,7 +19,7 @@ bot = commands.Bot(command_prefix="🌲",description="Smrček bot, všichni zná
 """
 ----------------   BOT EVENTY   ----------------
 """
-
+stillPlaying = True
 # když bot jde online
 @bot.event
 async def on_ready():
@@ -65,6 +65,19 @@ async def on_message(message):
 ----------------   BOT COMMANDY   ----------------
 """
 
+ffmpeg_options = {
+    #'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5',
+    'options': '-vn',
+}
+
+global play
+play = True
+
+@bot.command(name="die", description="Odpojí smrčka z voicu")
+async def die(ctx):
+    play = False
+    print(play)
+
 # Připojení do voicu
 @bot.command(name="join", description="Připojí se do voice channelu a začne všechny poučovat....")
 async def join(ctx,*, channel: discord.VoiceChannel):
@@ -76,27 +89,30 @@ async def join(ctx,*, channel: discord.VoiceChannel):
 
             vc = await channel.connect() # Připojení do voicu
 
-            while True:
-                txt = random_page()
-                print(txt)
-                # define variables
-                file = "file.mp3"
-                # initialize tts, create mp3 and play
-                tts = gTTS(txt, 'cz', lang="cs")
-                tts.save(file)
-                vc.play(discord.FFmpegPCMAudio(executable="/usr/bin/ffmpeg", source=file))
-                # Sleep while audio is playing.
-                while vc.is_playing():
-                    sleep(.1)
-                #sleep(random.randint(0,60)) 
+            play = True
+            play_file(vc) # Funkce, která hraje wikipedii
 
         except Exception as e:
-            await ctx.send(e)
+            await ctx.send(e) # Napsání erroru
+
+# Funkce na zpracování hudby
+def play_file(vc):
+    if(play == False):
+        return
+    #sleep(random.randint(0,60)) # Počkání 0 - 60 vteřin
+    file = "file.mp3" # Jméno souboru
+    txt = random_page() # Vygenerování náhodného souboru
+    print(txt)
+    # initialize tts, create mp3 and play
+    tts = gTTS(txt, 'cz', lang="cs") # Vytvoření MP3
+    tts.save(file) # Uložení MP3
+    vc.play(discord.FFmpegPCMAudio(executable="/usr/bin/ffmpeg", source=file, **ffmpeg_options), after=lambda v: play_file(vc)) # Zahrání a následné znovu zavolání funkce
 
 # Hello příkaz, sort of easter egg
 @bot.command(name="hello",description="Pozdraví tak, jak by Smrček pozdravit měl")
 async def hello(ctx):
     """Pozdraví tak, jak by Smrček pozdravit měl"""
+    # Různé pozdravy, mezi kterými si náhodně vybere
     if random.randint(0,100) < 25:
         await message.channel.send("Zdarec já sem Smrček! \nKUP SI VĚTŠÍ BRÝLE!")
     elif random.randint(0,100) < 25:
@@ -109,7 +125,6 @@ async def hello(ctx):
         await ctx.send('Zdravím, jsem Smrček a ty by jsi si měl koupit větší brýle!')
     else:
         await ctx.send("BAF!")
-
 
 # Funkce na získání náhodného wiki článku
 def random_page():
