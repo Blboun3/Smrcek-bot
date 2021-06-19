@@ -70,13 +70,10 @@ ffmpeg_options = {
     'options': '-vn',
 }
 
-global play
-play = True
 
 @bot.command(name="die", description="Odpojí smrčka z voicu")
 async def die(ctx):
-    play = False
-    print(play)
+    pass
 
 # Připojení do voicu
 @bot.command(name="join", description="Připojí se do voice channelu a začne všechny poučovat....")
@@ -89,7 +86,6 @@ async def join(ctx,*, channel: discord.VoiceChannel):
 
             vc = await channel.connect() # Připojení do voicu
 
-            play = True
             play_file(vc) # Funkce, která hraje wikipedii
 
         except Exception as e:
@@ -97,9 +93,7 @@ async def join(ctx,*, channel: discord.VoiceChannel):
 
 # Funkce na zpracování hudby
 def play_file(vc):
-    if(play == False):
-        return
-    #sleep(random.randint(0,60)) # Počkání 0 - 60 vteřin
+    sleep(random.randint(0,60)) # Počkání 0 - 60 vteřin
     file = "file.mp3" # Jméno souboru
     txt = random_page() # Vygenerování náhodného souboru
     print(txt)
@@ -114,13 +108,13 @@ async def hello(ctx):
     """Pozdraví tak, jak by Smrček pozdravit měl"""
     # Různé pozdravy, mezi kterými si náhodně vybere
     if random.randint(0,100) < 25:
-        await message.channel.send("Zdarec já sem Smrček! \nKUP SI VĚTŠÍ BRÝLE!")
+        await ctx.send("Zdarec já sem Smrček! \nKUP SI VĚTŠÍ BRÝLE!")
     elif random.randint(0,100) < 25:
-        await message.channel.send("Já Smrček ty být: JAK TI CHUTNALA KYTKA K VEČEŘI ?")
+        await ctx.send("Já Smrček ty být: JAK TI CHUTNALA KYTKA K VEČEŘI ?")
     elif random.randint(0,100) < 25:
-        await message.channel.send("Já, Smrčkoslav Jedlička MÁM VELKÝ BRÝLE!")
+        await ctx.send("Já, Smrčkoslav Jedlička MÁM VELKÝ BRÝLE!")
     elif random.randint(0,100) < 15:
-        await message.channel.send("Smrček zdraví Čubíka! Čau <@!452547916184158218> !")
+        await ctx.send("Smrček zdraví Čubíka! Čau <@!452547916184158218> !")
     elif random.randint(0,100) < 10:
         await ctx.send('Zdravím, jsem Smrček a ty by jsi si měl koupit větší brýle!')
     else:
