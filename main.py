@@ -93,7 +93,7 @@ async def join(ctx,*, channel: discord.VoiceChannel):
 
 # Funkce na zpracování hudby
 def play_file(vc):
-    sleep(random.randint(0,60)) # Počkání 0 - 60 vteřin
+    sleep(random.randint(0,15)) # Počkání 0 - 60 vteřin
     file = "file.mp3" # Jméno souboru
     txt = random_page() # Vygenerování náhodného souboru
     print(txt)
