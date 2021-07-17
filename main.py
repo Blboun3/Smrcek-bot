@@ -1,3 +1,5 @@
+# SMRČEK BOT
+# Autor: Blboun3
 # Import knihoven
 import discord
 from discord.ext import commands
