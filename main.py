@@ -9,8 +9,12 @@ from dotenv import load_dotenv
 import wikipedia
 import nacl
 from gtts import gTTS
+from googletrans import Translator
 from time import sleep
 
+# Nadefinování překladače
+translator = Translator()
+translator = Translator(service_urls=['translate.googleapis.com']) # Nastevní URL adresy, kterou googletrans bude používat
 # Nastavení jazyku wikipedia na češtinu
 wikipedia.set_lang('cs')
 # Bot object
@@ -23,6 +27,7 @@ stillPlaying = True
 # když bot jde online
 @bot.event
 async def on_ready():
+    # Různé pozdravy, mezi kterými si náhodně vybere
     print("---------------------------------------")
 	# Počítadlo serverů
     guild_count = 0
@@ -51,29 +56,26 @@ async def on_message(message):
         if random.randint(0,100) < 10:
             if random.randint(0,100) < 2: # 2% Easter EGG
                 await message.channel.send("KUP SI VĚTŠÍ BRÝLE!")
-            elif random.randint(0,100) < 5: # 5% Easter EGG
+            elif random.randint(0,100) < 2: # 5% Easter EGG
                 await message.channel.send("JAK TI CHUTNALA KYTKA K VEČEŘI ?")
-            elif random.randint(0,100) < 7: # 7% Easter EGG
+            elif random.randint(0,100) < 2: # 7% Easter EGG
                 await message.channel.send("MÁM VELKÝ BRÝLE!")
-            elif random.randint(0,100) < 10: # 10% Easter EGG
+            elif random.randint(0,100) < 2: # 10% Easter EGG
                 await message.channel.send("Čau <@!452547916184158218> !")
             else: # Pokud není easter egg
                 text = random_page() # Vygeneruj náhodný článek z Wikipedie
-                await message.channel.send(text) # Poslání náhodného článku
+                rando = random_translate(text, "cs") # Přeložení do náhodného jazyka
 
-"""
-----------------   BOT COMMANDY   ----------------
-"""
+                for i in range(11): # Náhodně krát přelož
+                    rando = random_translate(rando[0].text, rando[1]) # Přeložení do náhodného jazyka
 
-ffmpeg_options = {
-    #'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5',
-    'options': '-vn',
-}
+                translated = translator.translate(rando[0].text, dest="cs", src=rando[1]) # Přeložení zpátky do češtiny
+
+                await message.channel.send(translated.text) # Poslání náhodného článku
 
 
-@bot.command(name="die", description="Odpojí smrčka z voicu")
-async def die(ctx):
-    pass
+# ------------------------- BOT COMMANDS ------------------------
+
 
 # Připojení do voicu
 @bot.command(name="join", description="Připojí se do voice channelu a začne všechny poučovat....")
@@ -106,7 +108,6 @@ def play_file(vc):
 @bot.command(name="hello",description="Pozdraví tak, jak by Smrček pozdravit měl")
 async def hello(ctx):
     """Pozdraví tak, jak by Smrček pozdravit měl"""
-    # Různé pozdravy, mezi kterými si náhodně vybere
     if random.randint(0,100) < 25:
         await ctx.send("Zdarec já sem Smrček! \nKUP SI VĚTŠÍ BRÝLE!")
     elif random.randint(0,100) < 25:
@@ -128,6 +129,21 @@ def random_page():
    except wikipedia.exceptions.DisambiguationError as e:
        result = random_page()
    return result
+
+# Funkce na přeložení textu do náhodného jazyka
+def random_translate(text, Vsrc):
+    langs = ["ja", "la", "de", "be", "da", "fi", "fr", "el", "hu", "it", "lt", "pl", "pt", "ru", "ro", "sk" ,"tr"] # Seznam jazyků
+    Vdest = random.choice(langs) # Vybrání náhodného jazyka z pole
+    while Vsrc == Vdest: # Pokud jsou jazyky stejné
+        Vdest = random.choice(langs) # Vyber nový jazyk
+    # Přeložení textu
+    translated = translator.translate(text, dest=Vdest, src=Vsrc)
+    # Vrácení textu + jazyku v jakém je
+    print("----------------------")
+    print(text)
+    print(translated)
+    return [translated, Vdest]
+
 
 load_dotenv() # Načtení .env souboru
 bot.run(os.getenv("TOKEN")) # Spuštění bota
