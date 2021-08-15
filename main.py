@@ -18,7 +18,7 @@ import datetime
 import list_calendars
 
 # Nadefinování debug Nastavení
-DEBUG_PRINT_OUTS=True
+DEBUG_PRINT_OUTS=False
 
 # Nadefinování překladače
 translator = Translator()
