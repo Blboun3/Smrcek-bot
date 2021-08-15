@@ -13,6 +13,12 @@ import nacl
 from gtts import gTTS
 from googletrans import Translator
 from time import sleep
+import datetime
+# Import funkcí z jiných souborů
+import list_calendars
+
+# Nadefinování debug Nastavení
+DEBUG_PRINT_OUTS=True
 
 # Nadefinování překladače
 translator = Translator()
@@ -40,7 +46,7 @@ async def on_ready():
 		# zvýšení počítadla
         guild_count = guild_count + 1
 
-	# Vypsání výsledků
+	# Vypsání výsledkú
     print("---------------------------------------")
     print('Everything is loaded up, bot is ready for use! \n\tPrefix is: "🌲" \n\tBot\' user tag is: \'{0.user}\''.format(bot))
     print("\tSmrček bot is in  " + str(guild_count) + " guilds")
@@ -77,7 +83,20 @@ async def on_message(message):
 
 
 # ------------------------- BOT COMMANDS ------------------------
-
+# Vypsání skautských eventů
+@bot.command(name="list",description="Vypíše aktuálně všechny eventy ze skautského kalendáře")
+async def list(ctx):
+    shpig = list_calendars.get_calendars(DEBUG_PRINT_OUTS, False, 'medvediberoun@skaut.cz') # Získání eventů pomocí funkce ze souboru list_calendars.py
+    now = datetime.datetime.now() # 'Z' indicates UTC time
+    embed = discord.Embed(title="Skaut", url="https://medvediberou.eu/", description="4 Nadcházející akce ve skautském [kalendáři](https://calendar.google.com/calendar?cid=bWVkdmVkaWJlcm91bkBza2F1dC5jeg)", color=0x00FF00)
+    embed.set_author(name="Medvědi Beroun", url="https://medvediberou.eu/", icon_url="https://medvediberoun.eu/wp-content/uploads/2020/10/znak_oddilu.jpg")
+    embed.set_thumbnail(url="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.kindpng.com%2Fpicc%2Fm%2F246-2465899_upcoming-events-icon-calendar-icon-png-transparent-png.png&f=1&nofb=1")
+    embed.add_field(name=shpig[0][0], value=shpig[0][1] + "\n[Více](" + shpig[0][4] + ")", inline=False)
+    embed.add_field(name=shpig[1][0], value=shpig[1][2] + "\n[Více](" + shpig[1][4] + ")", inline=True)
+    embed.add_field(name=shpig[2][0], value=shpig[2][2] + "\n[Více](" + shpig[2][4] + ")", inline=True)
+    embed.add_field(name=shpig[3][0], value=shpig[3][2] + "\n[Více](" + shpig[3][4] + ")", inline=True)
+    embed.set_footer(text="https://www.skaut.cz/ • " + str(now.day) + "." + str(now.month) + "." + str(now.year) + " " + str(now.hour) + ":" + str(now.minute),icon_url="https://duckduckgo.com/i/682fa9a3.png")
+    await ctx.send(embed=embed)
 
 # Připojení do voicu
 @bot.command(name="join", description="Připojí se do voice channelu a začne všechny poučovat....")
@@ -141,9 +160,10 @@ def random_translate(text, Vsrc):
     # Přeložení textu
     translated = translator.translate(text, dest=Vdest, src=Vsrc)
     # Vrácení textu + jazyku v jakém je
-    print("----------------------")
-    print(text)
-    print(translated)
+    if(DEBUG_PRINT_OUTS):
+        print("----------------------")
+        print(text)
+        print(translated)
     return [translated, Vdest]
 
 
