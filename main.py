@@ -86,17 +86,30 @@ async def on_message(message):
 # Vypsání skautských eventů
 @bot.command(name="list",description="Vypíše aktuálně všechny eventy ze skautského kalendáře")
 async def list(ctx):
+    file = open("last.txt", "r")
+    content = file.readlines()[0]
+    file.close()
     shpig = list_calendars.get_calendars(DEBUG_PRINT_OUTS, False, 'medvediberoun@skaut.cz') # Získání eventů pomocí funkce ze souboru list_calendars.py
-    now = datetime.datetime.now() # 'Z' indicates UTC time
-    embed = discord.Embed(title="Skaut", url="https://medvediberou.eu/", description="4 Nadcházející akce ve skautském [kalendáři](https://calendar.google.com/calendar?cid=bWVkdmVkaWJlcm91bkBza2F1dC5jeg)", color=0x00FF00)
-    embed.set_author(name="Medvědi Beroun", url="https://medvediberou.eu/", icon_url="https://medvediberoun.eu/wp-content/uploads/2020/10/znak_oddilu.jpg")
-    embed.set_thumbnail(url="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.kindpng.com%2Fpicc%2Fm%2F246-2465899_upcoming-events-icon-calendar-icon-png-transparent-png.png&f=1&nofb=1")
-    embed.add_field(name=shpig[0][0], value=shpig[0][1] + "\n[Více](" + shpig[0][4] + ")", inline=False)
-    embed.add_field(name=shpig[1][0], value=shpig[1][2] + "\n[Více](" + shpig[1][4] + ")", inline=True)
-    embed.add_field(name=shpig[2][0], value=shpig[2][2] + "\n[Více](" + shpig[2][4] + ")", inline=True)
-    embed.add_field(name=shpig[3][0], value=shpig[3][2] + "\n[Více](" + shpig[3][4] + ")", inline=True)
-    embed.set_footer(text="https://www.skaut.cz/ • " + str(now.day) + "." + str(now.month) + "." + str(now.year) + " " + str(now.hour) + ":" + str(now.minute),icon_url="https://duckduckgo.com/i/682fa9a3.png")
-    await ctx.send(embed=embed)
+
+    if(str(content).strip() == str(shpig).strip()):
+        await ctx.send("Nic se nezměnilo od poslední kontroly. Data jsou stále aktuální!")
+    else:
+        file = open("last.txt", "w")
+        now = datetime.datetime.now() # 'Z' indicates UTC time
+        embed = discord.Embed(title="Skaut", url="https://medvediberou.eu/", description="4 Nadcházející akce ve skautském [kalendáři](https://calendar.google.com/calendar?cid=bWVkdmVkaWJlcm91bkBza2F1dC5jeg)", color=0x00FF00)
+        embed.set_author(name="Medvědi Beroun", url="https://medvediberou.eu/", icon_url="https://medvediberoun.eu/wp-content/uploads/2020/10/znak_oddilu.jpg")
+        embed.set_thumbnail(url="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.kindpng.com%2Fpicc%2Fm%2F246-2465899_upcoming-events-icon-calendar-icon-png-transparent-png.png&f=1&nofb=1")
+        embed.add_field(name=shpig[0][0], value=shpig[0][1] + "\n[Více](" + shpig[0][4] + ")", inline=False)
+        embed.add_field(name=shpig[1][0], value=shpig[1][2] + "\n[Více](" + shpig[1][4] + ")", inline=True)
+        embed.add_field(name=shpig[2][0], value=shpig[2][2] + "\n[Více](" + shpig[2][4] + ")", inline=True)
+        embed.add_field(name=shpig[3][0], value=shpig[3][2] + "\n[Více](" + shpig[3][4] + ")", inline=True)
+        # Clear file contents
+        file.seek(0)
+        file.truncate()
+        file.write(str(shpig)) # Write "shpig" without current date (to file)
+        file.close() # close file
+        embed.set_footer(text="https://www.skaut.cz/ • " + str(now.day) + "." + str(now.month) + "." + str(now.year) + " " + str(now.hour) + ":" + str(now.minute),icon_url="https://duckduckgo.com/i/682fa9a3.png")
+        await ctx.send(embed=embed) # Odeslání embedu
 
 # Připojení do voicu
 @bot.command(name="join", description="Připojí se do voice channelu a začne všechny poučovat....")
