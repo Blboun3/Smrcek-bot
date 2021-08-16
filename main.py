@@ -14,6 +14,9 @@ from gtts import gTTS
 from googletrans import Translator
 from time import sleep
 import datetime
+import threading
+import asyncio
+from os.path import exists
 # Import funkcí z jiných souborů
 import list_calendars
 
@@ -52,6 +55,10 @@ async def on_ready():
     print("\tSmrček bot is in  " + str(guild_count) + " guilds")
     print("---------------------------------------")
 
+    channel = bot.get_channel(824967262934925322)
+    #await channel.send("GEGEL")
+    await listc(channel)
+
 # Když zpráva:
 @bot.event
 async def on_message(message):
@@ -86,13 +93,19 @@ async def on_message(message):
 # Vypsání skautských eventů
 @bot.command(name="list",description="Vypíše aktuálně všechny eventy ze skautského kalendáře")
 async def list(ctx):
-    file = open("last.txt", "r")
-    content = file.readlines()[0]
-    file.close()
+    await listc(ctx)
+
+async def listc(ctx):
+    if(exists("last.txt")):
+        file = open("last.txt", "r")
+        content = file.readlines()[0]
+        file.close()
+    else:
+        content = " ahoj ahoj Čubík slovo exsistuje "
     shpig = list_calendars.get_calendars(DEBUG_PRINT_OUTS, False, 'medvediberoun@skaut.cz') # Získání eventů pomocí funkce ze souboru list_calendars.py
 
     if(str(content).strip() == str(shpig).strip()):
-        await ctx.send("Nic se nezměnilo od poslední kontroly. Data jsou stále aktuální!")
+        pass#await ctx.send("Nic se nezměnilo od poslední kontroly. Data jsou stále aktuální!")
     else:
         file = open("last.txt", "w")
         now = datetime.datetime.now() # 'Z' indicates UTC time
